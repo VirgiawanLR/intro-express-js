@@ -33,6 +33,23 @@ app.post("/products", (req, res) => {
   res.status(201).send(JSON.parse(fs.readFileSync("./data/products.json")));
 });
 
+app.patch("/products", (req, res) => {
+  let products = JSON.parse(fs.readFileSync("./data/products.json"));
+
+  products = products.map((product) => {
+    if (product.id == req.query.id) {
+      for (let property in req.body) {
+        delete product[property];
+      }
+      return { ...req.body, ...product };
+    } else {
+      return { ...product };
+    }
+  });
+  fs.writeFileSync("./data/products.json", JSON.stringify(products));
+  res.status(200).send(JSON.parse(fs.readFileSync("./data/products.json")));
+});
+
 app.listen(PORT, () => {
   console.log("server running on port: ", PORT);
 });
